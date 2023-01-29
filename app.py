@@ -18,7 +18,7 @@ def get_pet_data():
             category_list.append("cats")
         for _ in breeds_other:
             category_list.append("other")
-        colors = ["Black", "Brown", "Blue Merle", "Red Merle", "Tri-Color", "Spotted", "Striped"]
+        colors = ["Black", "Brown", "Yellow", "White", "Blue Merle", "Red Merle", "Tri-Color", "Spotted", "Striped"]
         name_list = ["Ace", "Alma", "Archie", "Aspen", "Bailey", "Bandit", "Bear", "Beau", "Bentley", "Beso", "Bruno", "Buddy", "Chandler", "Coco", "Conejito", "Diego", "Dixie", "Duke", "Durango", "Esmerelda ", "Fernando", "Finn", "Ginger", "Gracie", "Gunther", "Gus", "Hank", "Hazel", "Hermosa", "Hidalgo", "Ivy", "Jack", "Jax", "Joey", "Josefina", "Juno", "Kobe", "Kona", "Lady", "Leo", "Lexi", "Lily", "Loki", "Lola", "Louie", "Lucky", "Lucy", "Mariposa", "Maya", "Mia", "Molly", "Moose", "Murphey", "Nala", "Nina", "Nova", "Oliver", "Ollie", "Oscar", "Pablo", "Paco", "Paisley", "Perrita", "Piper", "Princess", "Riley", "Rosa", "Ross", "Roxy", "Scout", "Sofía", "Sonora ", "Stella", "Teddy", "Thor", "Tucker", "Willow", "Winnie", "Winston", "Xena"]
         for pet_id in range(1, 1000):
             pet_data[pet_id] = {}

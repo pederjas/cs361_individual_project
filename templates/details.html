@@ -2,11 +2,20 @@
 
 {% block content %}
 
-<ul>
-    {% for item in data %}
-    <li>{{ item }}: <a href="/?{{ item }}={{ data[item] }}">{{ data[item] }}</a></li>
-    {% endfor %}
-</ul>
+<div class="col-12 col-sm-9 col-md-6 col-xxl-3">
+    <img class="rounded thumbnail lazyload"
+    src="static/img/placeholder.jpg"
+    data-src=""
+    />
+</div>
+
+<div class="details mt-3">
+    <ul class="list-unstyled">
+        {% for item in data %}
+        <li>{{ item }}: <a href="/?{{ item }}={{ data[item] }}">{{ data[item] }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
 
 {% endblock %}
 
