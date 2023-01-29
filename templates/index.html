@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="section m-3 my-5">
+    <div class="container-fluid">
+        <div class="d-none d-md-block">
+
+            <div class="border border-success rounded p-1" >
+                filters:
+                <ul>
+                {% for filter in data['filter'] %}
+                {% if data['filter'][filter] != '' %}
+                    <li>{{ filter }}: {{ data['filter'][filter] }}</li>
+                {% endif %}
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="results">
+    <section class="section m-3 my-5">
+        <div class="container-fluid">
+            <div class="d-none d-md-block">
+
+                <span>Results: {{ data['pet_data']|length }}</span>
+
+                <ul class="p-0 m-0">
+                    {% for pet_id in data['pet_data'] %}
+                    <li class="d-inline-block mb-2 me-1 border">
+                        <a class="d-inline-block px-4 py-3" href="/details?pet_id={{ pet_id }}">{{ data['pet_data'][pet_id]['name'] }} - {{ data['pet_data'][pet_id]['color'] }}, {{ data['pet_data'][pet_id]['breed'] }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}
+
+{% block debug %}
+debug: {{ data }}
+{% endblock %}

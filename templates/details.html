@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<ul>
+    {% for item in data %}
+    <li>{{ item }}: <a href="/?{{ item }}={{ data[item] }}">{{ data[item] }}</a></li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
+
+{% block debug %}
+debug: {{ data }}
+{% endblock %}

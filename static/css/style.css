@@ -1,0 +1,35 @@
+html, body {
+    font-family: Helvetica, sans-serif;
+    background-color: #222 !important;
+    color: #ccc !important;
+    overflow-x: hidden !important;
+}
+
+#navbar {
+    transition: top 0.1s ease-in-out;
+}
+
+.breadcrumb a {
+    color: #666;
+    text-decoration: none;
+}
+
+#content {
+    margin-top: 65px;
+}
+
+.filter-gray {
+    /*https://codepen.io/sosuke/pen/Pjoqqp*/
+    filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(0%);
+}
+
+#debug {
+    overflow-wrap: anywhere;
+    font-size: 0.9em;
+    color: #999;
+}
+
+#debug a {
+    color: #666;
+    text-decoration: none;
+}
