@@ -1,7 +1,16 @@
 from flask import Flask, request, render_template
 import random
+import gmaps
 
 app = Flask(__name__)
+
+@app.route('/places_api', methods=['GET'])
+def places_api():
+    return gmaps.get_places(zip_code=request.args.get('zip_code'), radius_miles=request.args.get('radius_miles'), keywords=request.args.get('keywords'))
+
+@app.route('/place_detail_api', methods=['GET'])
+def place_detail_api():
+    return gmaps.get_place_detail(place_id = request.args.get('place_id'))
 
 pet_data = None
 def get_pet_data():
