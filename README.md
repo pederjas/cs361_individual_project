@@ -19,7 +19,7 @@ Making requests; this services exposes two API services: places_api and place_de
 * zip_code
 * radius_miles
 * keywords (keywords is a comma delimited list, url-encoded "%2C" or not should still work with the flask requests library)
-* Example Request: http://127.0.0.1:5000/places_api?zip_code=97116&radius=10&keywords=pets,veterinary
+* Example Request: http://127.0.0.1:5000/places_api?zip_code=97116&radius_miles=10&keywords=pets,veterinary
 * Example Response:
 ```
 [{
@@ -75,21 +75,19 @@ Making requests; this services exposes two API services: places_api and place_de
 }]
 ```
 
-
-
 2. /place_detail_api ... takes a single parameter
 NOTE: Careful with the place_detail_api as it does charge per request $0.003 per call (adds up)... which is why this is a separate endpoint (prefer user interaction) and I have not included my google_api_key ;)
 * place_id (obtained from the /places_api JSON response)
-* Example Request: http://127.0.0.1:5000/place_detail_api?place_id=ChIJVVVVVUAdlVQRnZRoyaPTbQc
+* Example Request: http://127.0.0.1:5000/place_detail_api?place_id=ChIJ-z9MCdUblVQRu4KBPhaDBlk
 * Example Response:
 ```
 {
-    formatted_address: "13541 NW Main St, Banks, OR 97106, USA",
-    formatted_phone_number: "(503) 324-6060",
-    name: "Banks Veterinary Service",
-    place_id: "ChIJVVVVVUAdlVQRnZRoyaPTbQc",
-    url: "https://maps.google.com/?cid=535316631139161245",
-    website: "http://www.banksveterinaryservice.com/"
+    formatted_address: "2625 Pacific Ave, Forest Grove, OR 97116, USA",
+    formatted_phone_number: "(503) 357-8880",
+    name: "Pacific Avenue Veterinary Clinic",
+    place_id: "ChIJ-z9MCdUblVQRu4KBPhaDBlk",
+    url: "https://maps.google.com/?cid=6414958850797044411",
+    website: "https://www.pacificavenuevetclinic.com/"
 }
 ```
 
