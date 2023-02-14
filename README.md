@@ -8,7 +8,7 @@ Getting started (steps if you want to run this on your own):
 * clone repo
 * create a virtual environment: python -m venv venv
 * activate the virtual environment: source venv/bin/activate
-* install dependencies: pip install requirements.txt
+* install dependencies: pip install -r requirements.txt
 * create a file at the root of the project called: "google_api_key" and copy and paste your google "places" api key into the file
 * startup flask: flask run
 
