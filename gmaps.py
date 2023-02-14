@@ -10,11 +10,14 @@ gmaps = googlemaps.Client(key = API_KEY)
 def get_places(zip_code=None, radius_miles=None, keywords=None):
 
     zip_code = int(zip_code) if zip_code is not None else 97116
-    radius_meters = radius_max = 50000
-    if radius_miles is not None:
+    radius_meters_max = 50000
+    if radius_miles is None:
+        radius_meters = radius_meters_max
+        radius_miles = get_meters_to_miles(radius_meters)
+    else:
         radius_miles = float(radius_miles)
         radius_meters = get_miles_to_meters(radius_miles)
-        radius_meters = radius_meters if radius_meters <= radius_max else radius_max
+        radius_meters = radius_meters if radius_meters <= radius_meters_max else radius_meters_max
     keywords = keywords.split(',') if keywords is not None else ['pet store', 'pet grooming', 'veterinary']
     lat_lng = get_lat_lng(zip_code)
 
@@ -26,6 +29,10 @@ def get_places(zip_code=None, radius_miles=None, keywords=None):
                 result_ids.append(res['place_id'])
                 dest_lat_lng = '%s,%s' % (res['geometry']['location']['lat'], res['geometry']['location']['lng'])
                 distance_miles = get_distance_miles(lat_lng, dest_lat_lng)
+
+                print('distance_miles:', distance_miles)
+                print('radius_miles:', radius_miles)
+                
                 if round(distance_miles, 1) <= round(radius_miles, 1):
                     res['distance_miles'] = round(distance_miles, 1)
                     dict_key = '%s.%s' % (str(distance_miles).split('.')[0].rjust(5, '0'), str(distance_miles).split('.')[1].ljust(20, '0'))
@@ -59,6 +66,9 @@ def get_distance_miles(origin, destination):
 
 def get_miles_to_meters(radius_miles):
     return int(float(radius_miles) * 1609.34)
+
+def get_meters_to_miles(radius_meters):
+    return int(float(radius_meters) / 1609.34)
 
 if __name__ == "__main__":
     get_places()
