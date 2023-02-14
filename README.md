@@ -27,6 +27,9 @@ Making requests; this services exposes two API services: places_api and place_de
 NOTE: Careful with the place_detail_api as it does charge per request $0.003 per call (adds up)... which is why this is a separate endpoint (prefer user interaction) and I have not included my google_api_key ;)
 
 
+![alt text](uml.png "UML Sequence Diagram")
+
+
 Basic UML (view raw text file for UML to render properly):
      ┌──────┐          ┌──────────┐          ┌────────────────┐
      │client│          │places_api│          │place_detail_api│
@@ -45,3 +48,7 @@ Basic UML (view raw text file for UML to render properly):
      ┌──┴───┐          ┌────┴─────┐          ┌───────┴────────┐
      │client│          │places_api│          │place_detail_api│
      └──────┘          └──────────┘          └────────────────┘
+
+
+
+
