@@ -28,4 +28,5 @@ NOTE: Careful with the place_detail_api as it does charge per request $0.003 per
 
 
 Basic UML:
+
 ![alt text](uml.png "UML Sequence Diagram")
