@@ -1,8 +1,11 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 import random
 import gmaps
+import zmq
+import json
 
 app = Flask(__name__)
+pet_data = None
 
 @app.route('/places_api', methods=['GET'])
 def places_api():
@@ -12,8 +15,140 @@ def places_api():
 def place_detail_api():
     return gmaps.get_place_detail(place_id = request.args.get('place_id'))
 
-pet_data = None
+@app.route('/petfinder_api', methods=['GET'])
+def petfinder_api(animal_type=None, zipcode=97116, distance=100, qty=100):
+    # Animal types must of the following: ('dog', 'cat', 'rabbit', 'small-furry', 'horse', 'bird', 'scales-fins-other', 'barnyard')
+    context = zmq.Context()
+    print("Connecting to zeromq server…")
+    socket = context.socket(zmq.REQ)
+    socket.connect("tcp://localhost:5555")
+    if animal_type is not None:
+        request = {"animal_type": animal_type, "zipcode": zipcode, "distance": distance, "qty": qty}
+    else:
+        request = {"zipcode": zipcode, "distance": distance, "qty": qty}
+    json_request = json.dumps(request)
+    print(f"Sending request: {json_request}")
+    socket.send_json(request)
+    res = socket.recv_json()
+    print(f"Response received...")
+    return res
+
+@app.route('/get_pet_data', methods=['GET'])
 def get_pet_data():
+    global pet_data
+    if pet_data is None:
+        pet_data = {}
+        for pet_info in petfinder_api()['animals']:
+
+            this_info = {}
+            this_info['category'] = pet_info['species'] if str(pet_info['species']).lower() == 'dog' or str(pet_info['species']).lower() == 'cat' else 'other' 
+            this_info['pet_id'] = pet_info['id']
+            this_info['name'] = pet_info['name'].strip()
+            this_info['description'] = pet_info['description']
+            this_info['age'] = pet_info['age']
+            this_info['photo_primary'] = pet_info['primary_photo_cropped']['small'] if pet_info['primary_photo_cropped'] is not None else 'static/img/placeholder.jpg'
+            this_info['date_intake'] = pet_info['published_at'].split('T')[0]
+            this_info['shelter_id'] = pet_info['organization_id']
+            this_info['status'] = pet_info['status']
+            this_info['size'] = pet_info['size']
+            this_info['gender'] = pet_info['gender']
+            this_info['profile_url'] = pet_info['url']
+
+            tags_list = []
+            try: 
+                tags_list.append(pet_info['name']) 
+            except: 
+                pass
+            try: 
+                tags_list.append(pet_info['gender'])
+            except: 
+                pass
+            try: 
+                tags_list.append(pet_info['colors']['primary'])
+            except: 
+                pass
+            try:
+                tags_list.append(pet_info['colors']['secondary'])
+            except:
+                pass
+            try:
+                tags_list.append(pet_info['breeds']['primary'])
+            except:
+                pass
+            try:
+                tags_list.append(pet_info['breeds']['secondary'])
+            except:
+                pass
+            tags_clean = []
+            for tag in tags_list:
+                if tag is not None:
+                    tags_clean.append(tag)
+            this_info['tags'] = ' / '.join(tags_clean)
+
+            pet_data[pet_info['id']] = this_info
+
+    return pet_data
+
+@app.route('/', methods=['GET'])
+def index():
+
+    global pet_data
+    if len(request.args) == 0:
+        pet_data = None
+    pet_data = get_pet_data()
+    pet_data_filtered = {}
+
+    data = {}
+    data['filter'] = {}
+    # exact match
+    data['filter']['category'] = request.args.get('category') if request.args.get('category') is not None else ''
+    data['filter']['pet_id'] = request.args.get('pet_id') if request.args.get('pet_id') is not None else ''
+    data['filter']['name'] = request.args.get('name') if request.args.get('name') is not None else ''
+    data['filter']['gender'] = request.args.get('gender') if request.args.get('gender') is not None else ''
+    data['filter']['age'] = request.args.get('age') if request.args.get('age') is not None else ''
+    data['filter']['size'] = request.args.get('size') if request.args.get('size') is not None else ''
+    data['filter']['shelter_id'] = request.args.get('shelter_id') if request.args.get('shelter_id') is not None else ''
+    data['filter']['date_intake'] = request.args.get('date_intake') if request.args.get('date_intake') is not None else ''
+    # fuzzy match
+    data['filter']['tags'] = request.args.get('tags') if request.args.get('tags') is not None else ''
+    data['filter']['breed'] = request.args.get('breed') if request.args.get('breed') is not None else ''
+    data['filter']['color'] = request.args.get('color') if request.args.get('color') is not None else ''
+    # todo
+    data['filter']['sort_by'] = request.args.get('sort_by') if request.args.get('sort_by') is not None else ''
+    data['filter']['sort_order'] = request.args.get('sort_order') if request.args.get('sort_order') is not None else ''
+
+    for pet_id in pet_data:
+        pet_info = pet_data[pet_id]
+        keep = True
+        for filter in data['filter']:
+            if request.args.get(filter) is not None:
+                if filter == 'tags':
+                    if request.args.get(filter).lower() not in str(pet_info[filter]).lower():
+                        keep = False
+                else:
+                    if request.args.get(filter).lower() != str(pet_info[filter]).lower():
+                        keep = False
+        if keep:
+            pet_data_filtered[pet_id] = pet_info
+
+    data['pet_data'] = pet_data_filtered
+
+    return render_template('index.html', data=data)
+
+@app.route('/details', methods=['GET'])
+def details():
+    pet_data = get_pet_data()
+    if request.args.get('pet_id') is not None:
+        return render_template('details.html', data=pet_data[int(request.args.get('pet_id'))])
+    else:
+        return redirect('/details?pet_id=%s' % (random.choice(list(pet_data.keys()))))
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('error.html'), 404
+
+# pet data stubb...
+def get_pet_data_mockup():
     global pet_data
     if pet_data is None:
         pet_data = {}
@@ -56,52 +191,3 @@ def get_pet_data():
         for pet_id in pet_data:
             print(pet_data[pet_id])
     return pet_data
-
-@app.route('/', methods=['GET'])
-def index():
-    pet_data = get_pet_data()
-    pet_data_filtered = {}
-
-    data = {}
-    data['filter'] = {}
-    data['filter']['category'] = request.args.get('category') if request.args.get('category') is not None else ''
-    data['filter']['breed'] = request.args.get('breed') if request.args.get('breed') is not None else ''
-    data['filter']['color'] = request.args.get('color') if request.args.get('color') is not None else ''
-    data['filter']['pet_id'] = request.args.get('pet_id') if request.args.get('pet_id') is not None else ''
-    data['filter']['name'] = request.args.get('name') if request.args.get('name') is not None else ''
-    data['filter']['shelter_id'] = request.args.get('shelter_id') if request.args.get('shelter_id') is not None else ''
-    data['filter']['search'] = request.args.get('search') if request.args.get('search') is not None else ''
-    data['filter']['date_intake'] = request.args.get('date_intake') if request.args.get('date_intake') is not None else ''
-    data['filter']['date_euthanization'] = request.args.get('date_euthanization') if request.args.get('date_euthanization') is not None else ''
-    data['filter']['sort_by'] = request.args.get('sort_by') if request.args.get('sort_by') is not None else ''
-    data['filter']['sort_order'] = request.args.get('sort_order') if request.args.get('sort_order') is not None else ''
-    for pet_id in pet_data:
-        pet_info = pet_data[pet_id]
-        keep = True
-        for filter in data['filter']:
-            if request.args.get(filter) is not None:
-                if filter == 'search':
-                    if request.args.get(filter).lower() not in str(pet_info[filter]).lower():
-                        keep = False
-                else:
-                    if request.args.get(filter).lower() != str(pet_info[filter]).lower():
-                        keep = False
-        if keep:
-            pet_data_filtered[pet_id] = pet_info
-
-    data['pet_data'] = pet_data_filtered
-
-    return render_template('index.html', data=data)
-
-@app.route('/details', methods=['GET'])
-def details():
-    pet_data = get_pet_data()
-    if request.args.get('pet_id') is not None:
-        data = pet_data[int(request.args.get('pet_id'))]
-    else:
-        data = pet_data[random.randint(1, len(pet_data))]
-    return render_template('details.html', data=data)
-
-@app.errorhandler(404)
-def not_found(error):
-    return render_template('error.html'), 404

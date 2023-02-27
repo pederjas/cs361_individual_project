@@ -28,10 +28,10 @@
                 <a class="d-block" href="/details?pet_id={{ pet_id }}">
                     <img class="rounded thumbnail lazyload"
                         src="static/img/placeholder.jpg"
-                        data-src=""
+                        data-src="{{ data['pet_data'][pet_id]['photo_primary'] }}"
                     />
                     <div class="thumbnail-overlay-bottom p-2 p-s-1">
-                        {{ data['pet_data'][pet_id]['name'] }} - {{ data['pet_data'][pet_id]['color'] }}, {{ data['pet_data'][pet_id]['breed'] }}
+                        {{ data['pet_data'][pet_id]['name'] }}
                     </div>
                 </a>
             </div>
@@ -44,4 +44,4 @@
 
 {% block debug %}
 debug: {{ data }}
-{% endblock %}
+{% endblock %} 

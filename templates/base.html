@@ -29,7 +29,7 @@
               <ol class="breadcrumb">
 
                 <li class="breadcrumb-item">
-                    <a class="py-3 px-0" href="/">Pet Finder</a>
+                    <a class="py-3 px-0" href="/?cache=True">Pet Finder</a>
                 </li>
 
               </ol>
@@ -50,8 +50,8 @@
                 </li>
 
                 <form action="/" method="GET" class="d-flex">
-                    {% set search = request.args['search'] %}
-                    <input class="form-control me-2" name="search" value="{{search}}" type="search" placeholder="Search" aria-label="Search">
+                    {% set tags = request.args['tags'] %}
+                    <input class="form-control me-2" name="tags" value="{{tags}}" type="search" placeholder="Search Tags" aria-label="Search">
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
 
@@ -63,10 +63,10 @@
                     <a href="/" class="btn btn-secondary btn-lg d-flex" role="button" >Home</a>
                 </li>
                 <li class="mb-1">
-                    <a href="/?category=dogs" class="btn btn-secondary btn-lg d-flex" role="button" >Dogs</a>
+                    <a href="/?category=dog" class="btn btn-secondary btn-lg d-flex" role="button" >Dogs</a>
                 </li>
                 <li class="mb-1">
-                    <a href="/?category=cats" class="btn btn-secondary btn-lg d-flex" role="button" >Cats</a>
+                    <a href="/?category=cat" class="btn btn-secondary btn-lg d-flex" role="button" >Cats</a>
                 </li>
                 <li class="mb-1">
                     <a href="/?category=other" class="btn btn-secondary btn-lg d-flex" role="button" >Other</a>
@@ -94,8 +94,10 @@
 
     <section id="debug">
         <div class="container-fluid">
+        <!-- 
         {% block debug %}
         {% endblock %}
+        -->
         </div>
     </section>
 
